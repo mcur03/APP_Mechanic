@@ -1,4 +1,4 @@
-// import db from '../db';
+import db from '../db';
 
 export interface Service {
     id: number;
@@ -8,5 +8,6 @@ export interface Service {
     description: string;
     createdAt: Date;
     updatedAt: Date;
+    address: string;
 }
 

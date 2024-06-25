@@ -1,0 +1,105 @@
+1. REGISTRO USUARIO
+     - Medodo: POST
+     - URL: http://localhost:3000/api/register
+     - Body:JSON
+     - Como Administrador:
+{
+   "username": "admin01",
+   "password": "admin01",
+   "email":"admin01@gmail.com", 
+   "role": "admin"
+}
+
+      - Como Cliente:
+{
+   "username": "client02",
+   "password": "client02",
+   "email":"client02@gmail.com", 
+   "role": "client",
+   "phone": "3130100022",
+   "address": "por ahí no es"
+}
+
+      - Como mecanico:
+{
+  "username": "mechanic02",
+  "password": "mechanic02",
+  "email":"mechanic02@gmail.com",
+  "role": "mechanic",
+  "phone": "3130102222",
+  "specialties": "all",
+  "availability": "yes"
+}
+
+
+2. INICIO DE SESIÓN DE ADMIN, CLIENTE O MECANICO:
+	- Metodo: POST
+	- URL: http://localhost:3000/api/login
+	- Body: JSON
+{
+   "username": "client02",
+   "password": "client02"
+}
+
+3. VER PERFIL DELCLIENTE O MECANICO:
+	- Metodo: GET
+	- URL-CLIENTE: http://localhost:3000/client/profile O URL-MECANICO: http://localhost:3000/mechanic/profile
+	- Authorization: pegar el token de inicio de sesión 
+
+4. EL CLIENTE SOLICITA UN SERVICIO:
+	- Metodo: POST
+	- URL: http://localhost:3000/client/service-request
+	- Authorization: pegar el token del cliente
+	- Body: JSON
+{
+  "description": "Revisión del motor",
+  "address": "Calle 123, Armenia"
+}
+
+5. EL SISTEMA ADMIN ASIGNA EL SERVICIO A UN MECANICO DISPONIBLE:
+	- Metodo: POST
+	- URL: http://localhost:3000/admin/assign-service/:serviceId
+	- Autorization: token admin
+	- Body: JSON
+{
+  "serviceId": 5 --> id del servicio 
+}
+
+6. EL MECANICO RESPONDE LA SOLICITUD:
+	- Metodo: POST
+	- URL: http://localhost:3000/mechanic/respond-service
+	- Authorization: pegar el token del mecanico
+	- Body: JSON
+{
+  "serviceId": 5,
+  "response": "accept"
+}
+
+7. EL MECANICO COMPLETA EL SERVICIO 
+	- Metodo: POST
+	- URL: http://localhost:3000/mechanic/service-complete
+	- Authorization: pegar el token del mecanico
+	- Body: JSON
+{
+  "serviceId": 5
+}
+
+8. EL CLIENTE REALIZA EL PAGO:
+	- Metodo: POST
+	- URL: http://localhost:3000/client/makePayment
+	- Authorization: pegar el token del cliente
+	- Body: JSON
+{
+  "serviceId": 5,
+  "amount": 2500
+}
+
+9. EL MECANICO PUEDE CONSULTAR SU SALDO:
+	- Metodo: GET
+	- URL: http://localhost:3000/mechanic/earnings
+	- Authorization: pegar el token del mecanico
+
+10. EL CLIENTE PUEDE VER EL HISTORIAL DE LOS SERVICIOS:
+	- Metodo: GET
+	- URL: http://localhost:3000/client/service-history
+	- Authorization: pegar el token del cliente

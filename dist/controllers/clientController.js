@@ -29,7 +29,7 @@ const getClientProfile = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.getClientProfile = getClientProfile;
 const createServiceRequest = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
-    const { description } = req.body;
+    const { description, address } = req.body; // Asegurarnos de recibir la dirección
     const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
     console.log("userId:", userId);
     try {
@@ -45,8 +45,9 @@ const createServiceRequest = (req, res) => __awaiter(void 0, void 0, void 0, fun
         else {
             clientId = clientRows[0].id;
         }
-        // Insertar en la tabla `services`
-        yield db_1.default.query('INSERT INTO services (client_id, mechanic_id, status, description) VALUES (?, ?, ?, ?)', [clientId, null, 'pending', description]);
+        // Insertar en la tabla `services` con la dirección
+        const [serviceResult] = yield db_1.default.query('INSERT INTO services (client_id, mechanic_id, status, description, address) VALUES (?, ?, ?, ?, ?)', [clientId, null, 'pending', description, address]);
+        console.log("Service Insert Result: ", serviceResult);
         res.status(201).json({ message: 'Service request created successfully' });
     }
     catch (err) {
@@ -55,6 +56,30 @@ const createServiceRequest = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.createServiceRequest = createServiceRequest;
+// export const createServiceRequest = async (req: AuthenticatedRequest, res: Response) => {
+//   const { description } = req.body;
+//   const userId = req.user?.id;
+//   console.log("userId:", userId);
+//   try {
+//     // Verificar si el cliente existe en la tabla `clients`
+//     const [clientRows]: any = await pool.query('SELECT id FROM clients WHERE user_id = ?', [userId]);
+//     console.log("clientRows:", clientRows);
+//     let clientId: number;
+//     if (Array.isArray(clientRows) && clientRows.length === 0) {
+//       // Insertar el cliente si no existe
+//       const [result] = await pool.query('INSERT INTO clients (user_id, phone, address) VALUES (?, ?, ?)', [userId, 'default_phone', 'default_address']);
+//       clientId = (result as RowDataPacket).insertId;
+//     } else {
+//       clientId = clientRows[0].id;
+//     }
+//     // Insertar en la tabla `services`
+//     await pool.query('INSERT INTO services (client_id, mechanic_id, status, description) VALUES (?, ?, ?, ?)', [clientId, null, 'pending', description]);
+//     res.status(201).json({ message: 'Service request created successfully' });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: (err as Error).message });
+//   }
+// };
 const getServiceHistory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.id;

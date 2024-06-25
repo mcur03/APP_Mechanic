@@ -1,0 +1,73 @@
+CREATE DATABASE mechanic_service;
+USE mechanic_service;
+drop DATABASE mechanic_service;
+
+-- Crear la tabla `users`
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  role ENUM('client', 'mechanic', 'admin') NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)ENGINE=INNODB;
+
+SELECT * FROM users;
+
+DELETE FROM users;
+ set sql_safe_updates=0;
+-- Crear la tabla `clients`
+CREATE TABLE IF NOT EXISTS clients (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  phone VARCHAR(20),
+  address VARCHAR(255),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE 
+)ENGINE=INNODB;
+
+select * from clients;
+
+-- Crear la tabla `mechanics`
+CREATE TABLE IF NOT EXISTS mechanics(
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  phone VARCHAR(20),
+  specialties VARCHAR(255),
+  availability ENUM('yes','no') DEFAULT 'yes',
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL ON UPDATE CASCADE 
+)ENGINE=INNODB;
+select *  from mechanics;
+
+-- Crear la tabla `services`
+CREATE TABLE IF NOT EXISTS services (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  client_id INT,
+  mechanic_id INT,
+  description TEXT,
+  status ENUM('pending', 'in_progress', 'completed', 'rejected'),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE SET NULL ON UPDATE CASCADE ,
+  FOREIGN KEY (mechanic_id) REFERENCES mechanics(id) ON DELETE SET NULL ON UPDATE CASCADE 
+)ENGINE=INNODB;
+select * from services;
+SELECT * FROM services WHERE client_id = 2;
+ALTER TABLE services ADD COLUMN address VARCHAR(255);
+delete from services where id in(1,2,3,4);
+
+SELECT * FROM mechanics WHERE id = (SELECT id FROM mechanics WHERE user_id = 3);
+
+SELECT id FROM mechanics WHERE user_id = 3;
+SELECT SUM(payments.amount) AS total_earnings
+FROM payments
+JOIN services ON payments.service_id = services.id
+WHERE services.mechanic_id = 1 AND services.status = 'completed';
+
+CREATE TABLE IF NOT EXISTS payments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  service_id INT,
+  amount DECIMAL(10, 2) NOT NULL,
+  payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
+  FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=INNODB;
+select * from payments;
